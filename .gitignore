@@ -1,0 +1,12 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+/vendor/
+!/vendor/composer
+!/vendor/autoload.php
+.user.ini
+access.log
+error.log
+index.html
+.vagrant/
+
+

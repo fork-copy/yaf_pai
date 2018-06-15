@@ -1,0 +1,51 @@
+<?php
+    $qrocde =   __DIR__.'/../library/ThirdParty/Wxpay/example/phpqrcode/';
+    include_once $qrocde.'phpqrcode.php';
+
+    class WxpayController extends BaseController {
+
+        //生成订单,返回订单 id
+        public function createbillAction(){
+
+            $itemId = Common_Request::getRequest('itemid','');
+            if (!$itemId){
+                $this->send(-9001,'参数错误');
+            }
+
+            //是否登陆
+            $this->isLogin();
+            $model = new WxpayModel();
+            $billid = $model->createbill((int)$itemId, $_SESSION['user_id']);
+            if($billid ==false){
+                $this->send($model->errno,$model->errmsg);
+            }
+
+            $this->send(0,'',['billid'=>$billid]);
+
+        }
+
+        //通过订单 id 返回二维码
+        public function qrcodeAction(){
+            $billid = Common_Request::getRequest('billid','');
+            if (!$billid){
+                $this->send(-9001,'参数错误');
+            }
+            //生成二维码
+
+            $model = new WxpayModel();
+            $data = $model->qrcode($billid);//weixin://wxpay/bizpayurl?pr=0t891da
+            if (!$data){
+                $this->send($model->errno,$model->errmsg);
+            }
+            QRcode::png($data);
+
+        }
+
+        public function callbackAction(){
+            $model = new WxpayModel();
+            $model->callback();
+
+
+        }
+    }
+
